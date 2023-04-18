@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Response;
 
@@ -31,7 +33,20 @@ class AuthController extends Controller
     }
 
     public function login(Request $request){
-        return response()->json(["message"=>"Metodo Login ok"]);
+        $credentials = $request->validate([
+            'email'     =>['required','email'],
+            'password'  =>['required']
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            $token = $user->createToken('token')->plainTextToken;
+            $cookie = cookie('cookie_token', $token, 60 * 24);
+            return response(["token"=>$token], Response::HTTP_OK)->withoutCookie($cookie);
+        } else {
+            return response(["message"=> "Credenciales inválidas"],Response::HTTP_UNAUTHORIZED);
+        }
+        // return response()->json(["message"=>"Metodo Login ok"]);
     }
 
     public function userProfile(Request $request){
