@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
@@ -50,14 +50,21 @@ class AuthController extends Controller
     }
 
     public function userProfile(Request $request){
-
+        return response()->json([
+            "message"   => "userProfile OK",
+            "userData"  => auth()->user()
+        ], Response::HTTP_OK);
     }
 
     public function logout(){
-
+        $cookie = Cookie::forget('cookie_token');
+        return response(["message"=>"Cierre de sesion OK"], Response::HTTP_OK)->withCookie($cookie);
     }
 
     public function allUsers(Request $request){
-
+        $users = User::all();
+        return response()->json([
+            "users"=>$users
+        ]);
     }
 }
