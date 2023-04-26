@@ -13,3 +13,12 @@ Route::group(['middleware' => ['auth:sanctum']], function(){
 });
 
 Route::get('users', [AuthController::class, 'allUsers']);
+
+Route::get('/api/documentation', function () {
+    return view('swagger');
+});
+
+Route::get('/api/documentation/swagger.json', function () {
+    return response()->json(\Swagger\scan(app_path()));
+});
+
